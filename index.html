@@ -175,7 +175,7 @@ function spin(){
   Promise.all(promises).then(()=>{
     if(results.every(v=>v===r1)){
       inv[weightedItems[r1].name] += weightedItems[r1].amount ;
-      alert("You won " + inv[weightedItems[r1].name] + " " + weightedItems[r1].name);
+      alert("You won " + weightedItems[r1].amount + " " + weightedItems[r1].name + "s");
     }
     localStorage.setItem("inv", JSON.stringify(inv));
     spinning = false;
