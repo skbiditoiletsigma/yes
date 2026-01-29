@@ -152,27 +152,35 @@ function weightedPick(){
 // Spin function
 function spin(){
   if(spinning || inv["Treats"]<=0) return;
+
   spinning = true;
   spinBtn.disabled = true;
   inv["Treats"]--;
 
-  const results = [weightedPick(), weightedPick(), weightedPick()];
+  // First reel: fully weighted
+  const r1 = weightedPick();
+
+  // Second & third reels: favor the first reel
+  const r2 = Math.random() < 0.7 ? r1 : weightedPick();
+  const r3 = Math.random() < 0.6 ? r1 : weightedPick();
+
+  const results = [r1, r2, r3];
 
   const promises = reels.map((r,i)=>new Promise(res=>{
-    setTimeout(()=>animateReel(r, 1500 + i*300, results[i], res),0);
+    animateReel(r, 1500 + i*300, results[i], res);
   }));
 
   Promise.all(promises).then(()=>{
-    const winnerIndex = results[0];
-    if(results.every(v=>v===winnerIndex)){
-      inv[weightedItems[winnerIndex].name]++;
-      alert("You won: "+weightedItems[winnerIndex].name);
+    if(results.every(v=>v===r1)){
+      inv[weightedItems[r1].name]++;
+      alert("You won: " + weightedItems[r1].name);
     }
-    localStorage.setItem("inv",JSON.stringify(inv));
+    localStorage.setItem("inv", JSON.stringify(inv));
     spinning = false;
     spinBtn.disabled = false;
   });
 }
+
 
 // Dark/Light toggle
 function toggle(){
