@@ -62,7 +62,7 @@ button {
 const items = [
   {n:"Mythic Egg", i:"https://skbiditoiletsigma.github.io/yes/IMAGES/mythic_egg.png"},
   {n:"Star Treat", i:"https://skbiditoiletsigma.github.io/yes/IMAGES/star_treat.png"},
-  {n:"Treats", i:"https://skbiditoiletsigma.github.io/yes/IMAGES/treats.png"},
+  {n:"Treat", i:"https://skbiditoiletsigma.github.io/yes/IMAGES/treats.png"},
   {n:"Moon Charm", i:"https://skbiditoiletsigma.github.io/yes/IMAGES/moon_charm.png"},
   {n:"Gifted Mythic Egg", i:"https://skbiditoiletsigma.github.io/yes/IMAGES/gifted_mythic_egg.png"},
   {n:"Basic Egg", i:"https://skbiditoiletsigma.github.io/yes/IMAGES/basic_egg.png"},
@@ -97,7 +97,7 @@ function render() {
 }
 
 function addTreats() {
-  inv["Treats"] = (inv["Treats"] || 0) + 3;
+  inv["Treat"] = (inv["Treat"] || 0) + 3;
   localStorage.setItem("inv", JSON.stringify(inv));
   render();
 }
