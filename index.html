@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weighted Slot Machine</title>
+<style>
+:root {
+  --bg:#f4f4f4;
+  --text:#111;
+  --card:#fff;
+}
+.dark {
+  --bg:#121212;
+  --text:#f4f4f4;
+  --card:#1e1e1e;
+}
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.container {
+  background:var(--card);
+  padding:20px;
+  border-radius:12px;
+  width:420px;
+  text-align:center;
+}
+.reels {
+  display:flex;
+  justify-content:space-between;
+  margin:20px 0;
+}
+.reel {
+  width:100px;
+  height:100px;
+  overflow:hidden;
+  border-radius:10px;
+  background:#00000022;
+  position:relative;
+}
+.strip {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+}
+.strip img {
+  width:100px;
+  height:100px;
+  display:block;
+}
+button {
+  padding:10px;
+  margin:5px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.spin { background:#4caf50; color:white; }
+.spin:disabled { background:#777; cursor:not-allowed; }
+.toggle { background:#2196f3; color:white; }
+.link { background:#9c27b0; color:white; }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>🎰 Weighted Slot Machine</h2>
+
+  <div class="reels">
+    <div class="reel"><div class="strip" id="r1"></div></div>
+    <div class="reel"><div class="strip" id="r2"></div></div>
+    <div class="reel"><div class="strip" id="r3"></div></div>
+  </div>
+
+  <button id="spinBtn" class="spin" onclick="spin()">Spin (1 Treat)</button><br>
+  <button class="toggle" onclick="toggle()">Dark / Light</button>
+  <button class="link" onclick="location.href='inventory.html'">Inventory</button>
+</div>
+
+<script>
+// Weighted items list (rarity from most rare to least)
+const weightedItems = [
+  {name:"Gifted Mythic Egg", img:"images/gifted_mythic_egg.png", weight:1},
+  {name:"Mythic Egg", img:"images/mythic_egg.png", weight:2},
+  {name:"Star Treat", img:"images/star_treat.png", weight:3},
+  {name:"Super Smoothie", img:"images/super_smoothie.png", weight:4},
+  {name:"Red Extract", img:"images/red_extract.png", weight:5},
+  {name:"Blue Extract", img:"images/blue_extract.png", weight:5},
+  {name:"Moon Charm", img:"images/moon_charm.png", weight:6},
+  {name:"Basic Egg", img:"images/basic_egg.png", weight:7},
+  {name:"Treats", img:"images/treats.png", weight:10}
+];
+
+// Build weighted pool
+const pool = [];
+weightedItems.forEach((item,index)=>{
+  for(let i=0;i<item.weight;i++) pool.push(index);
+});
+
+// Inventory
+let inv = JSON.parse(localStorage.getItem("inv")) || {};
+weightedItems.forEach(x=>inv[x.name]??=0);
+inv["Treats"]??=5;
+
+// Theme persistence
+if(localStorage.getItem("theme")==="dark") document.body.classList.add("dark");
+
+const reels = ["r1","r2","r3"].map(id=>document.getElementById(id));
+const spinBtn = document.getElementById("spinBtn");
+let spinning = false;
+
+// Build reel strips (looped 3x for smooth scroll)
+reels.forEach(strip=>{
+  for(let i=0;i<weightedItems.length*3;i++){
+    const it = weightedItems[i % weightedItems.length];
+    const img = document.createElement("img");
+    img.src = it.img;
+    strip.appendChild(img);
+  }
+});
+
+// Smooth animation using requestAnimationFrame
+function animateReel(strip, duration, targetIndex, resolve){
+  const totalHeight = strip.offsetHeight/3;
+  let startTime = null;
+
+  function step(timestamp){
+    if(!startTime) startTime = timestamp;
+    const elapsed = timestamp-startTime;
+    const progress = Math.min(elapsed/duration,1);
+    const ease = 1 - Math.pow(1-progress,3); // cubic easing
+    const y = ease*totalHeight*3 + targetIndex*100;
+    strip.style.transform = `translateY(${-y % totalHeight}px)`;
+    if(progress<1) requestAnimationFrame(step);
+    else resolve();
+  }
+  requestAnimationFrame(step);
+}
+
+// Weighted random pick
+function weightedPick(){
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+// Spin function
+function spin(){
+  if(spinning || inv["Treats"]<=0) return;
+  spinning = true;
+  spinBtn.disabled = true;
+  inv["Treats"]--;
+
+  const results = [weightedPick(), weightedPick(), weightedPick()];
+
+  const promises = reels.map((r,i)=>new Promise(res=>{
+    setTimeout(()=>animateReel(r, 1500 + i*300, results[i], res),0);
+  }));
+
+  Promise.all(promises).then(()=>{
+    const winnerIndex = results[0];
+    if(results.every(v=>v===winnerIndex)){
+      inv[weightedItems[winnerIndex].name]++;
+      alert("You won: "+weightedItems[winnerIndex].name);
+    }
+    localStorage.setItem("inv",JSON.stringify(inv));
+    spinning = false;
+    spinBtn.disabled = false;
+  });
+}
+
+// Dark/Light toggle
+function toggle(){
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme",
+    document.body.classList.contains("dark")?"dark":"light");
+}
+</script>
+</body>
+</html>

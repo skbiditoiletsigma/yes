@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Inventory</title>
+
+<style>
+:root {
+  --bg:#f4f4f4;
+  --text:#111;
+  --card:#fff;
+}
+.dark {
+  --bg:#121212;
+  --text:#f4f4f4;
+  --card:#1e1e1e;
+}
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial;
+  padding:20px;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:16px;
+}
+.card {
+  background:var(--card);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+}
+.card img {
+  width:80px;
+  height:80px;
+}
+button {
+  padding:8px 12px;
+  margin-right:8px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.back { background:#4caf50; color:white; }
+.toggle { background:#2196f3; color:white; }
+.treats { background:#ff9800; color:white; }
+</style>
+</head>
+
+<body>
+<button class="back" onclick="location.href='index.html'">⬅ Back</button>
+<button class="toggle" onclick="toggle()">Dark / Light</button>
+<button class="treats" onclick="addTreats()">+3 Treats</button>
+
+<h2>🎒 Inventory</h2>
+<div class="grid" id="grid"></div>
+
+<script>
+const items = [
+  {n:"Mythic Egg", i:"images/mythic_egg.png"},
+  {n:"Star Treat", i:"images/star_treat.png"},
+  {n:"Treats", i:"images/treats.png"},
+  {n:"Moon Charm", i:"images/moon_charm.png"},
+  {n:"Gifted Mythic Egg", i:"images/gifted_mythic_egg.png"},
+  {n:"Basic Egg", i:"images/basic_egg.png"},
+  {n:"Star Jelly", i:"images/star_jelly.png"},
+  {n:"Royal Jelly", i:"images/royal_jelly.png"},
+  {n:"Super Smoothie", i:"images/super_smoothie.png"},
+  {n:"Red Extract", i:"images/red_extract.png"},
+  {n:"Blue Extract", i:"images/blue_extract.png"}
+];
+
+let inv = JSON.parse(localStorage.getItem("inv")) || {};
+
+// 🔹 Load theme
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+}
+
+const grid = document.getElementById("grid");
+
+function render() {
+  grid.innerHTML = "";
+  items.forEach(it=>{
+    const card = document.createElement("div");
+    card.className="card";
+    card.innerHTML = `
+      <img src="${it.i}">
+      <strong>${it.n}</strong><br>
+      x${inv[it.n] || 0}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function addTreats() {
+  inv["Treats"] = (inv["Treats"] || 0) + 3;
+  localStorage.setItem("inv", JSON.stringify(inv));
+  render();
+}
+
+function toggle(){
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme",
+    document.body.classList.contains("dark") ? "dark" : "light"
+  );
+}
+
+render();
+</script>
+</body>
+</html>
