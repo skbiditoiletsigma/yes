@@ -87,15 +87,15 @@ button {
 <script>
 // Weighted items list (rarity from most rare to least)
 const weightedItems = [
-  {name:"Gifted Mythic Egg", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/gifted_mythic_egg.png", weight:1},
-  {name:"Mythic Egg", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/mythic_egg.png", weight:2},
-  {name:"Star Treat", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/star_treat.png", weight:3},
-  {name:"Super Smoothie", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/super_smoothie.png", weight:4},
-  {name:"Red Extract", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/red_extract.png", weight:5},
-  {name:"Blue Extract", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/blue_extract.png", weight:5},
-  {name:"Moon Charm", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/moon_charm.png", weight:6},
-  {name:"Basic Egg", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/basic_egg.png", weight:7},
-  {name:"Treats", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/treats.png", weight:10}
+  {name:"Gifted Mythic Egg", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/gifted_mythic_egg.png", amount:1, weight:1},
+  {name:"Mythic Egg", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/mythic_egg.png", amount:1, weight:2},
+  {name:"Star Treat", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/star_treat.png", amount:1, weight:3},
+  {name:"Super Smoothie", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/super_smoothie.png", amount:1, weight:4},
+  {name:"Red Extract", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/red_extract.png", amount: 3, weight:5},
+  {name:"Blue Extract", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/blue_extract.png", amount: 3, weight:5},
+  {name:"Moon Charm", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/moon_charm.png", amount: 5, weight:6},
+  {name:"Basic Egg", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/basic_egg.png", amount: 3, weight:7},
+  {name:"Treats", img:"https://skbiditoiletsigma.github.io/yes/IMAGES/treats.png", amount:10, weight:10}
 ];
 
 // Build weighted pool
@@ -172,10 +172,8 @@ function spin(){
 
   Promise.all(promises).then(()=>{
     if(results.every(v=>v===r1)){
-      inv[weightedItems[r1].name]++;
-
-      alert(weightedItems[r1].name)
-      // alert("You won: " + weightedItems[r1].name);
+      inv[weightedItems[r1].name] += weightedItems[r1].amount ;
+      alert("You won " + toString(weightedItems[r1].amount) + " " + weightedItems[r1].name);
     }
     localStorage.setItem("inv", JSON.stringify(inv));
     spinning = false;
